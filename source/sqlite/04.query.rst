@@ -1,0 +1,122 @@
+Шаг 4 - Извлечение информации из таблиц
+--------------------------------------
+
+Установка соединения
+~~~~~~~~~~~~~~~~~~~~
+
+Настало время перейти от теории к практике. Для дальнейшего изучения
+SQL Server создадим маленькую БД. Для создания БД Вам необходимо скачать
+с проекта файл базы example_db/sqlite/mydb
+
+Или создать ее самому используя скрипты.
+
+Проект SQLite предоставляет простую программу командной строки с именем sqlite3
+(или sqlite3.exe в Windows), для соединения нужно запустить
+
+Для Windows
+
+.. code-block:: shell
+
+
+    sqlite3.exe mydb
+
+
+Для Linux
+
+.. code-block:: shell
+
+
+    sqlite3 mydb
+
+
+
+Служебные команды
+~~~~~~~~~~~~~~~~~
+
+``.show``  -информация о базе данных
+
+``.table`` - список таблиц
+
+``.schema`` - узнать схему таблицы
+
+``.mode`` - режим вывода
+
+Получим такой вывод
+
+
+.. code-block:: sql
+
+
+    SQLite version 3.37.2 2022-01-06 13:25:41
+    Enter ".help" for usage hints.
+    sqlite> .show
+          echo: off
+           eqp: off
+       explain: auto
+       headers: off
+          mode: list
+     nullvalue: ""
+        output: stdout
+    colseparator: "|"
+    rowseparator: "\n"
+         stats: off
+         width:
+      filename: mydb
+      sqlite> .table
+      departments   dept_manager  salaries
+      dept_emp      employees     titles
+    sqlite>
+    sqlite> .schema employees
+    CREATE TABLE `employees` (
+        emp_no      INT             NOT NULL,
+        birth_date  DATE            NOT NULL,
+        first_name  VARCHAR(14)     NOT NULL,
+        last_name   VARCHAR(16)     NOT NULL,
+        gender      VARCHAR(16)  NOT NULL,
+        hire_date   DATE            NOT NULL,
+        PRIMARY KEY (emp_no)
+    );
+
+
+Запросы к БД
+~~~~~~~~~
+
+
+Все запросы выполняются одной командой SELECT. В самой простой форме команда
+``SELECT`` просто инструктирует БД, чтобы извлесь информацию из таблицы. Например,
+чтобы вывести содержимое таблицы работников (employees) надо ввести следующее:
+
+.. code-block:: sql
+
+    .mode table
+    select first_name,lastname from employees limit 5;
+
+
+
+.. code-block:: shell
+
+    +------------+-----------+
+    | first_name | last_name |
+    +------------+-----------+
+    | Georgi     | Facello   |
+    | Bezalel    | Simmel    |
+    | Parto      | Bamford   |
+    | Chirstian  | Koblick   |
+    | Kyoichi    | Maliniak  |
+    +------------+-----------+
+
+
+
+.. code-block:: sql
+
+    select * from employees limit 5;
+
+
+В общем случае команда ``SELECT`` начинается с ключевого слова ``SELECT``, за ним
+идет список имен столбцов, которые Вы хотите видеть, или *\(звездочка), если
+Вы хотите видеть все столбцы. За тем идет ключевое слово ``FROM``, далее имя
+таблицы, к которой делается запрос. Ключевое слово ``LIMIT`` ограничивает
+число записей которые отображуются на экране
+
+Что будет дальше? Дальше предлагается углубится в команду ``SELECT``:
+сортировка данных, сложные логические выражения и специальные оператор

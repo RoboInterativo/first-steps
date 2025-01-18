@@ -1,0 +1,66 @@
+Шаг 1. Установка
+--------------
+
+Скачать
+^^^^^^^
+
+
+На 28 ноября 2024 Вы можете установить либо новый 3.13
+либо 3.12 так как большинство разработчиков, в том числе и мы работаем на нем
+
+`Скачать python 3.12`_
+
+.. _Скачать python 3.12 : https://www.python.org/ftp/python/3.12.7/python-3.12.7-amd64.exe
+
+`Скачать python 3.13`_
+
+.. _Скачать python 3.13 : https://www.python.org/ftp/python/3.13.0/python-3.13.0-amd64.exe
+
+`Посмотреть все релизы под Windows`_
+
+.. _Посмотреть все релизы под Windows : https://www.python.org/downloads/windows/
+
+
+Виртуальная среда
+~~~~~~~~~~~~~~~~~~
+`Подробнее про устновку и среду тут`_
+
+.. _Подробнее про устновку и среду тут : https://mothergeo-py.readthedocs.io/en/latest/development/how-to/venv-win.html
+
+Для нормальной работы и чтобы проекты не зависили от друг друга, рекомендуется
+работать с изолированной виртуальной средой. в папке проэкта запустите
+
+ .. code-block:: shell
+
+    python -m venv
+
+
+Для активации среды наберите в коммандной строке
+
+WINDOWS
+
+ .. code-block:: shell
+
+
+  .\venv\Scripts\activate
+
+
+LINUX
+
+
+ .. code-block:: shell
+
+
+  source venv/bin/activate
+
+
+Для работы в python
+~~~~~~~~~~~~~~~~~
+Не требует устновки, входит в core ядра python начиная с `python 2.5`
+
+  .. code-block:: python
+
+     import sqlite3
+     # Создаем подключение к базе данных (файл my_database.db будет создан)
+     connection = sqlite3.connect('my_database.db')
+     connection.close()

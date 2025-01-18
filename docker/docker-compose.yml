@@ -1,0 +1,19 @@
+services:
+  sqlserver:
+    image: nexus.bia-tech.ru/mssql/server:2022-latest
+    network_mode: "host"
+    # ports:
+    #  - 1433:1433
+    environment:
+     - ACCEPT_EULA=Y
+     - MSSQL_PID=Standard
+     - SA_PASSWORD=Password!
+     - MSSQL_AGENT_ENABLED=true
+    volumes:
+      - ./data:/data
+      - ./demo:/opt/demo
+ #     - ./scripts:/opt/scripts
+#/opt/mssql-tools18/bin$ ./sqlcmd  -S 127.0.0.1 -C -U sa -P Password
+
+SELECT name, database_id, create_date FROM sys.databases;
+GO

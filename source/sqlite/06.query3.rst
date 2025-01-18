@@ -1,0 +1,348 @@
+Шаг 6 - SELECT - операторы сравнения, логические и специальные
+--------------------------------------
+В данном разделе используется база **db_example/custom**
+
+Операторы отношения
+~~~~~~~~~~~~~~~~~~~
+
+На предыдущем шаге мы использовали оператор равенства ``=`` в предложении
+``WHERE`` для выбора записей из таблиц. SQL позволяет строить сложные условия
+отбора записей и для этого предоставляет операторы отношения,
+логические операторы и специальные операторы.
+
+.. note::
+
+
+    | Операторы отношения это:
+    | ``=`` Равно
+    | ``>`` Больше чем
+    | ``<`` Меньше чем
+    | ``>=`` Больше или равно
+    | ``<=`` Меньше или равно
+    | ``<>`` Не равно
+
+Они имеют стандартные значения для символьных значений и дат.
+Символьные значения сравниваются в терминах их кодов.
+Предположим, что нам надо увидеть всех заказчиков **customers** в **creditLimit** выше 59000:
+
+.. code-block:: sql
+
+
+    select customerName,creditLimit from customers where creditLimit> 59000 ;
+
+
+
+Результат таков:
+
+.. code-block:: shell
+
+
+    +------------------------------------+-------------+
+    |            customerName            | creditLimit |
+    +------------------------------------+-------------+
+    | Signal Gift Stores                 | 71800       |
+    | Australian Collectors, Co.         | 117300      |
+    | La Rochelle Gifts                  | 118200      |
+    | Baane Mini Imports                 | 81700       |
+    | Mini Gifts Distributors Ltd.       | 210500      |
+    | Blauer See Auto, Co.               | 59700       |
+    | Mini Wheels Co.                    | 64600       |
+    | Land of Toys Inc.                  | 114900      |
+    +------------------------------------+-------------+
+
+Логические операторы
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. note::
+
+
+    | Логические операторы:
+    | ``AND`` логическое "И"
+    | ``OR`` логическое "ИЛИ"
+    | ``NOT`` логическое отрицание
+
+
+Оператор ``AND`` сравнивает два логических значения и возвращает ``TRUE`` (истина),
+если оба значения истинны (т.е. равны ``TRUE``), в остальных случаях - ``FALSE` (ложь).
+Оператор ``OR`` возвращает ``TRUE``, если хотя бы один из аргументов равен ``TRUE``.
+Оператор ``NOT`` возвращает ``TRUE``, если его аргумент равен ``FALSE`` и наоборот.
+
+Использование логических операторов значительно увеличивает возможности команды
+``SELECT``. Например, для просмотра заказчиков из **Madrid**, которые имеют
+**creditLimit** выше 0 достаточно команды:
+
+
+.. code-block:: sql
+
+    select customerName,city,country,creditLimit from customers
+    where city= 'Madrid' and creditLimit>0;
+
+
+
+В нашей БД имеется только три заказчика, удовлетворяющий этому условию.
+
+.. code-block:: shell
+
+    +----------------------------+--------+---------+-------------+
+    |        customerName        |  city  | country | creditLimit |
+    +----------------------------+--------+---------+-------------+
+    | Euro+ Shopping Channel     | Madrid | Spain   | 227600      |
+    | CAF Imports                | Madrid | Spain   | 59600       |
+    | Corrida Auto Replicas, Ltd | Madrid | Spain   | 104600      |
+    +----------------------------+--------+---------+-------------+
+
+Оператор OR или
+~~~~~~~~~~~~~~~
+
+Если использовать ``OR``, то получим всех заказчиков, находящихся в **Madrid**
+или в **Los Angeles**
+
+.. code-block:: sql
+
+
+    select customerName,city,country from customers
+    where city= 'Madrid' or city='Los Angeles';
+
+
+Результат запроса:
+
+.. code-block:: shell
+
+
+    +----------------------------+-------------+---------+
+    |        customerName        |    city     | country |
+    +----------------------------+-------------+---------+
+    | Euro+ Shopping Channel     | Madrid      | Spain   |
+    | ANG Resellers              | Madrid      | Spain   |
+    | CAF Imports                | Madrid      | Spain   |
+    | Men R US Retailers, Ltd.   | Los Angeles | USA     |
+    | Corrida Auto Replicas, Ltd | Madrid      | Spain   |
+    | Anton Designs, Ltd.        | Madrid      | Spain   |
+    +----------------------------+-------------+---------+
+
+
+Оператор NOT инвертирования
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+  ``NOT`` используется для инвертирования значений. Запрос:
+
+.. code-block:: sql
+
+  select customerName,city,country,creditLimit from customers
+  where city= 'Madrid' and not  creditLimit=0;
+
+
+выдаст:
+
+
+ .. code-block:: shell
+
+
+  +----------------------------+--------+---------+-------------+
+  |        customerName        |  city  | country | creditLimit |
+  +----------------------------+--------+---------+-------------+
+  | Euro+ Shopping Channel     | Madrid | Spain   | 227600      |
+  | CAF Imports                | Madrid | Spain   | 59600       |
+  | Corrida Auto Replicas, Ltd | Madrid | Spain   | 104600      |
+  +----------------------------+--------+---------+-------------+
+
+
+
+Группировка условий и выражений
+~~~~~~~~~~~~~~~~~~~
+
+
+Для группировки выражений SQL позволяет использовать круглые скобки ( ). Например:
+
+ .. code-block:: sql
+
+
+    select customerName,city,country,creditLimit from customers
+    where not (city='Madrid' and creditLimit=0)
+
+
+Этот запрос отбирает заказчиков, которые НЕ находятся
+в Madrid или НЕ имеют creditLimit  0. Результат:
+
+
+ .. code-block:: shell
+
+
+    +------------------------------------+-------------------+--------------+-------------+
+    |            customerName            |       city        |   country    | creditLimit |
+    +------------------------------------+-------------------+--------------+-------------+
+    | Atelier graphique                  | Nantes            | France       | 21000       |
+    | Signal Gift Stores                 | Las Vegas         | USA          | 71800       |
+    | Australian Collectors, Co.         | Melbourne         | Australia    | 117300      |
+    | La Rochelle Gifts                  | Nantes            | France       | 118200      |
+    | Baane Mini Imports                 | Stavern           | Norway       | 81700       |
+    | Mini Gifts Distributors Ltd.       | San Rafael        | USA          | 210500      |
+    | Havel & Zbyszek Co                 | Warszawa          | Poland       | 0           |
+    +------------------------------------+-------------------+--------------+-------------+
+
+Операторы: IN, BETWEEN, LIKE, IS NULL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Рассмотрим теперь специальные операторы: ``IN``, ``BETWEEN``, ``LIKE``, ``IS NULL``.
+
+Оператор ``IN`` определяет список значений, в который должно входить значение поля.
+Например, если Вы хотите найти всех продавцов находящихся в **Madrid** или **Paris**,
+Вы должны использовать такой запрос:
+
+.. code-block:: sql
+
+    SELECT customerName,city,country,creditLimit
+    FROM customers WHERE city='Madrid' OR city='Paris';
+
+
+
+
+Но есть есть более простой способ:
+
+.. code-block:: sql
+
+    SELECT customerName,city,country,creditLimit
+    FROM customers WHERE city IN('Madrid' ,'Paris');
+
+
+Результат этого запроса:
+
+.. code-block:: shell
+
+    +----------------------------+--------+---------+-------------+
+    |        customerName        |  city  | country | creditLimit |
+    +----------------------------+--------+---------+-------------+
+    | Euro+ Shopping Channel     | Madrid | Spain   | 227600      |
+    | La Corne Dabondance, Co.   | Paris  | France  | 84300       |
+    | ANG Resellers              | Madrid | Spain   | 0           |
+    | Lyon Souveniers            | Paris  | France  | 68100       |
+    | CAF Imports                | Madrid | Spain   | 59600       |
+    | Auto Canal+ Petit          | Paris  | France  | 95000       |
+    | Corrida Auto Replicas, Ltd | Madrid | Spain   | 104600      |
+    | Anton Designs, Ltd.        | Madrid | Spain   | 0           |
+    +----------------------------+--------+---------+-------------+
+
+
+
+Набор значений для оператора ``IN`` заключается в круглые скобки, значения разделяются запятыми.
+
+Оператор BETWEEN
+~~~~~~~~~~~~~~~~~~~
+
+
+Оператор ``BETWEEN`` похож на оператор ``IN``. В отличие от списка допустимых
+значений ``BETWEEN`` определяет диапазон значений. В запросе Вы должны указать
+слово ``BETWEEN`` затем начальное значение, ключевое слово ``AND`` и конечное значение.
+Первое значение должно быть меньше второго.
+Следующий запрос выберет заказчиков с creditLimit между 34800 и 55400:
+
+.. code-block:: sql
+
+
+    SELECT customerName,city,country,creditLimit
+    FROM customers where creditLimit
+    BETWEEN 34800 AND 55400;
+
+
+
+.. code-block:: shell
+
+
+    +--------------------------------+----------------+-----------+-------------+
+    |          customerName          |      city      |  country  | creditLimit |
+    +--------------------------------+----------------+-----------+-------------+
+    | Volvo Model Replicas, Co       | Luleå          | Sweden    | 53100       |
+    | Cambridge Collectables Co.     | Cambridge      | USA       | 43400       |
+    | Mini Caravy                    | Strasbourg     | France    | 53800       |
+    | Québec Home Shopping Network   | Montréal       | Canada    | 48700       |
+    | Tekni Collectables Inc.        | Newark         | USA       | 43000       |
+    | Australian Gift Network, Co    | South Brisbane | Australia | 51600       |
+    | Gifts4AllAges.com              | Boston         | USA       | 41900       |
+    | Gift Ideas Corp.               | Glendale       | USA       | 49700       |
+    | Mini Auto Werke                | Graz           | Austria   | 45300       |
+    | Microscale Inc.                | NYC            | USA       | 39800       |
+    | Frau da Collezione             | Milan          | Italy     | 34800       |
+    | West Coast Collectables Co.    | Burbank        | USA       | 55400       |
+    | Double Decker Gift Stores, Ltd | London         | UK        | 43300       |
+    +--------------------------------+----------------+-----------+-------------+
+
+
+Оператор LIKE
+~~~~~~~~~~~~~
+
+
+
+Оператор LIKE применим только к символьным полям, с которыми он используется,
+чтобы находить подстроки. Т.е. он ищет поле символа, чтобы видеть совпадает
+ли с условием часть его строки. В качестве условия он использует специальные символы:
+
+символ подчеркивания ``_`` - замещает любой одиночный символ.
+
+Например, ``к_т`` будет соответствовать **кот** и **кит**, но не **крот**.
+знак процента ``%`` - замещает последовательность любого числа символов.
+Например, ``%м%р`` будет соответствовать **компьютер** и **омар**.
+Давайте выберем заказчиков чьи имена начинаются с буквы ``"О"``:
+
+.. code-block:: sql
+
+
+    SELECT customerName,city,country,creditLimit
+    FROM customers
+    WHERE customerName LIKE 'O%';
+
+
+.. code-block:: shell
+
+
+    +------------------------------+------------+---------+-------------+
+    |         customerName         |    city    | country | creditLimit |
+    +------------------------------+------------+---------+-------------+
+    | Osaka Souveniers Co.         | Kita-ku    | Japan   | 81200       |
+    | Online Mini Collectables     | Brickhaven | USA     | 68700       |
+    | Oulu Toy Supplies, Inc.      | Oulu       | Finland | 90500       |
+    | Online Diecast Creations Co. | Nashua     | USA     | 114200      |
+    +------------------------------+------------+---------+-------------+
+
+
+``LIKE`` удобен поиске значений, если Вы точно не помните как они пишутся.
+Вы просто можете использовать ту часть, которую помните.
+
+NULL и is NULL
+~~~~~~~~~~~~~~
+
+Так как ``NULL`` указывает на отсутствие значения Вы не можете знать каков
+бужет результат любого сравнения с ``NULL``. Часто Вам различать строки, содержащие
+значения ``NULL`` в каком-либо столбце. Для этого существует специальный оператор
+ ``IS NULL``. Выберем из нашей БД заказчиков с NULL значениями в столбце **postalCode**:
+
+.. code-block:: sql
+
+
+    SELECT customerName,city,country,creditLimit,postalCode
+    FROM customers
+    WHERE postalCode IS NULL;
+
+
+
+
+.. code-block:: shell
+
+     +-------------------------------+-------------------+-------------+-------------+------------+
+     |         customerName          |       city        |   country   | creditLimit | postalCode |
+     +-------------------------------+-------------------+-------------+-------------+------------+
+     | King Kong Collectables, Co.   | Central Hong Kong | Hong Kong   | 58600       |            |
+     | Down Under Souveniers, Inc    | Auckland          | New Zealand | 88000       |            |
+     | Asian Treasures, Inc.         | Cork              | Ireland     | 0           |            |
+     | GiftsForHim.com               | Auckland          | New Zealand | 77700       |            |
+     | Extreme Desk Decorations, Ltd | Wellington        | New Zealand | 86800       |            |
+     | Frau da Collezione            | Milan             | Italy       | 34800       |            |
+     | Kellys Gift Shop              | Auckland          | New Zealand | 110000      |            |
+     +-------------------------------+-------------------+-------------+-------------+------------+
+
+
+
+Теперь Вы знаете как можно строить запросы к таблицам, используя любые условия.
+Далее следует: агрегатные функции и просто функции, ``GROUP BY``,``ORDER BY``.

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <p>This is unique content for this page.</p>
+
+  <table class="table table-success table-striped   table-hover">
+  <thead>
+    <tr>
+      {% for item in col %}
+      <th scope="col"><a href="/orderdetails?orderNumber={{orderNumber}}&sort={{item}}">
+        {{item}}
+        </a>
+      </th>
+
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+        {% for row in rez %}
+    <tr>
+  {% for item in row %}
+     {% if item ==row[4] %}
+      <td><a href="/productdetails?productCode={{ item}}">{{ item}}</a></td>
+     {% else %}
+      <td>{{ item}}</td>
+      {% endif %}
+{% endfor %}
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

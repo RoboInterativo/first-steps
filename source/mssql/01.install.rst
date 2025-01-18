@@ -1,0 +1,17 @@
+Шаг 1. Установка
+--------------
+Установка в Windows
+~~~~~~~~~~~~~~~~~~~
+Для учебных нужд можно скачать версию Developers, база полнофункциональная
+не для коммерческого использования. либо Express
+
+`Скачать Express`_
+
+.. _Скачать Express: https://www.microsoft.com/ru-ru/download/details.aspx?id=104781&lc=1033
+
+
+`Скачать Management Studio`_
+
+.. _Скачать Management Studio: https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16&redirectedfrom=MSDN
+
+https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms

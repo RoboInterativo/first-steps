@@ -1,0 +1,26 @@
+Шаг 1. Установка
+--------------
+Установка в Windows
+~~~~~~~~~~~~~~~~~~~
+Скачать клиент можно тут
+https://www.sqlite.org/2024/sqlite-dll-win-x64-3470100.zip
+
+Установка в Ubuntu Linux
+~~~~~~~~~~~~~~~~~
+Многие дистрибутивы Linux содержат пакет sqlite3
+
+ .. code-block:: shell
+
+    sudo apt install sqlite3
+
+
+Установка в python
+~~~~~~~~~~~~~~~~~
+Не требует устновки, входит в core ядра python начиная с `python 2.5`
+
+.. code-block:: python
+
+   import sqlite3
+   # Создаем подключение к базе данных (файл my_database.db будет создан)
+   connection = sqlite3.connect('my_database.db')
+   connection.close()
