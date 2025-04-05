@@ -1,0 +1,95 @@
+.. _sqlite-union-operator:
+
+Шаг 13 - Использование оператора UNION в SQLite
+==============================================
+
+**Пример 1:** Объединение списка сотрудников и клиентов из одного города
+
+.. code-block:: sql
+
+    SELECT employeeNumber AS id, lastName AS name, 'Employee' AS type
+    FROM employees
+    WHERE officeCode IN (
+        SELECT officeCode
+        FROM offices
+        WHERE city = 'San Francisco'
+    )
+
+    UNION
+
+    SELECT customerNumber AS id, customerName AS name, 'Customer' AS type
+    FROM customers
+    WHERE city = 'San Francisco';
+
+Результат:
+
++----+-------------------+----------+
+| id |       name        |   type   |
++====+===================+==========+
+| 1  |     Murphy        | Employee |
++----+-------------------+----------+
+| 103| Atelier graphique | Customer |
++----+-------------------+----------+
+
+**Правила UNION:**
+
+1. Количество и порядок столбцов должны совпадать во всех объединяемых запросах
+
+2. Типы данных должны быть совместимы
+
+**Пример 2:** UNION ALL для сохранения дубликатов
+
+.. code-block:: sql
+
+    SELECT employeeNumber AS id, lastName AS name, city
+    FROM employees e
+    JOIN offices o ON e.officeCode = o.officeCode
+
+    UNION ALL
+
+    SELECT customerNumber AS id, customerName AS name, city
+    FROM customers;
+
+Результат:
+
++-----+-------------------+---------------+
+| id  |       name        |     city      |
++=====+===================+===============+
+| 1002| Murphy            | San Francisco |
++-----+-------------------+---------------+
+| 103 | Atelier graphique | Nantes        |
++-----+-------------------+---------------+
+| ... | ...               | ...           |
++-----+-------------------+---------------+
+
+**Пример 3:** UNION с сортировкой (ORDER BY)
+
+.. code-block:: sql
+
+    SELECT p.productCode, p.productName, 'High' AS price_level
+    FROM products p
+    WHERE p.buyPrice > (
+        SELECT AVG(buyPrice) * 1.5
+        FROM products
+    )
+
+    UNION
+
+    SELECT p.productCode, p.productName, 'Low' AS price_level
+    FROM products p
+    WHERE p.buyPrice < (
+        SELECT AVG(buyPrice) * 0.5
+        FROM products
+    )
+
+    ORDER BY productName;
+
+Результат:
+
++-------------+--------------------------+-------------+
+| productCode |       productName        | price_level |
++=============+==========================+=============+
+| S10_1949    | 1952 Alpine Renault 1300 | High        |
++-------------+--------------------------+-------------+
+| S24_2000    | 1960 BSA Gold Star DBD34 | Low         |
++-------------+--------------------------+-------------+

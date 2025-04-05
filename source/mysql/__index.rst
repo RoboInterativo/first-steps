@@ -1,5 +1,5 @@
-SQLITE 
-=======
+MYSQL Server
+======================
 
 .. toctree::
    :maxdepth: 1
@@ -15,4 +15,4 @@ SQLITE
 
 
    basic/__index
-   advanced/__index
+  

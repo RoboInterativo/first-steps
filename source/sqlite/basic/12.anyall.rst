@@ -1,0 +1,92 @@
+.. _sqlite-any-all-operators:
+
+Шаг 12 - Использование операторов ANY и ALL в SQLite (аналоги)
+=============================================================
+
+**Пример 1:** Найти офисы в городах, где есть клиенты (аналог ANY/IN)
+
+.. code-block:: sql
+
+    SELECT officeCode, city, country
+    FROM offices
+    WHERE city IN (
+        SELECT DISTINCT city
+        FROM customers
+        WHERE city IS NOT NULL
+    );
+
+Результат:
+
++------------+---------------+---------+
+| officeCode |     city      | country |
++============+===============+=========+
+|     4      |    Paris      |  France |
++------------+---------------+---------+
+|     7      |    London     |   UK    |
++------------+---------------+---------+
+
+**Пример 2:** Найти сотрудников, у которых есть клиенты с кредитным лимитом выше среднего (аналог ANY)
+
+.. code-block:: sql
+
+    SELECT DISTINCT e.employeeNumber, e.lastName, e.firstName
+    FROM employees e
+    JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+    WHERE c.creditLimit > (
+        SELECT AVG(creditLimit)
+        FROM customers
+    );
+
+Результат:
+
++----------------+-----------+------------+
+| employeeNumber | lastName  | firstName  |
++================+===========+============+
+|     1002       |  Murphy   |   Diane    |
++----------------+-----------+------------+
+|     1056       | Patterson |    Mary    |
++----------------+-----------+------------+
+
+**Пример 3:** Найти продукты, которые дороже ВСЕХ продуктов в категории 'Motorcycles' (аналог ALL)
+
+.. code-block:: sql
+
+    SELECT productCode, productName, buyPrice
+    FROM products
+    WHERE buyPrice > (
+        SELECT MAX(buyPrice)
+        FROM products
+        WHERE productLine = 'Motorcycles'
+    );
+
+Результат:
+
++-------------+------------------------------+----------+
+| productCode |         productName          | buyPrice |
++=============+==============================+==========+
+|   S10_1949 | 1952 Alpine Renault 1300     |   98.58  |
++-------------+------------------------------+----------+
+|   S10_4757 | 1972 Alfa Romeo GTA          |   85.68  |
++-------------+------------------------------+----------+
+
+**Пример 4:** Найти клиентов, чей кредитный лимит меньше ВСЕХ клиентов в США (аналог ALL)
+
+.. code-block:: sql
+
+    SELECT customerNumber, customerName, creditLimit
+    FROM customers
+    WHERE creditLimit < (
+        SELECT MIN(creditLimit)
+        FROM customers
+        WHERE country = 'USA'
+    ) AND creditLimit > 0;
+
+Результат:
+
++----------------+-------------------------+-------------+
+| customerNumber |      customerName       | creditLimit |
++================+=========================+=============+
+|      124       | Mini Gifts Distributors |    21000    |
++----------------+-------------------------+-------------+
+|      129       |  Toys4GrownUps.com      |    34400    |
++----------------+-------------------------+-------------+

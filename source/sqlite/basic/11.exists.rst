@@ -1,0 +1,123 @@
+.. _sqlite-exists-operator:
+
+Шаг 11 - Использование оператора EXISTS в SQLite
+===============================================
+
+Оператор EXISTS
+---------------
+
+
+
+
+Оператор EXISTS принимает подзапрос как аргумент и возвращает:
+- ``TRUE``, если подзапрос возвращает хотя бы одну строку
+- ``FALSE``, если подзапрос не возвращает ни одной строки
+
+
+.. _sqlite-exists-operator:
+
+
+
+**Пример 1:** Найти всех клиентов, если существует хотя бы один клиент из Парижа
+
+.. code-block:: sql
+
+    SELECT customerNumber, customerName, city
+    FROM customers c1
+    WHERE EXISTS (
+        SELECT 1
+        FROM customers c2
+        WHERE c2.city = 'Paris'
+    );
+
+**Результат:**
+
+======  =======================  ==========
+cnum    customerName             city
+======  =======================  ==========
+103     Atelier graphique        Nantes
+112     Signal Gift Stores       Las Vegas
+114     Australian Collectors    Melbourne
+...     ...                      ...
+======  =======================  ==========
+
+**Пример 2:** Найти сотрудников, обслуживающих несколько клиентов
+
+.. code-block:: sql
+
+    SELECT DISTINCT e.employeeNumber, e.lastName, e.firstName
+    FROM employees e
+    JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+    WHERE EXISTS (
+        SELECT 1
+        FROM customers c2
+        WHERE c2.salesRepEmployeeNumber = c.salesRepEmployeeNumber
+        AND c2.customerNumber <> c.customerNumber
+    );
+
+**Результат:**
+
+======  ==========  ===========
+empID   lastName    firstName
+======  ==========  ===========
+1002    Murphy      Diane
+1056    Patterson   Mary
+1076    Firrelli    Jeff
+...     ...         ...
+======  ==========  ===========
+
+**Пример 3:** Найти сотрудников с только одним клиентом
+
+.. code-block:: sql
+
+    SELECT e.employeeNumber, e.lastName, e.firstName
+    FROM employees e
+    WHERE EXISTS (
+        SELECT 1
+        FROM customers c
+        WHERE c.salesRepEmployeeNumber = e.employeeNumber
+        AND NOT EXISTS (
+            SELECT 1
+            FROM customers c2
+            WHERE c2.salesRepEmployeeNumber = e.employeeNumber
+            AND c2.customerNumber <> c.customerNumber
+        )
+    );
+
+**Результат:**
+
+======  ==========  ===========
+empID   lastName    firstName
+======  ==========  ===========
+1102    Bondur      Gerard
+1166    Thompson    Leslie
+...     ...         ...
+======  ==========  ===========
+
+**Пример 4:** Найти офисы, в которых есть сотрудники с клиентами
+
+.. code-block:: sql
+
+    SELECT o.officeCode, o.city, o.country
+    FROM offices o
+    WHERE EXISTS (
+        SELECT 1
+        FROM employees e
+        JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+        WHERE e.officeCode = o.officeCode
+    );
+
+**Результат:**
+
+
++------------+----------------+---------+
+| officeCode | city           | country |
++============+================+=========+
+| 1          | San Francisco  | USA     |
++------------+----------------+---------+
+| 2          | Boston         | USA     |
++------------+----------------+---------+
+| 4          | Paris          | France  |
++------------+----------------+---------+
+| ...        | ...            | ...     |
++------------+----------------+---------+

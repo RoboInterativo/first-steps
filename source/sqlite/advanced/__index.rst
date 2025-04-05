@@ -1,4 +1,4 @@
-SQLITE 
+SQLITE Продвинутый
 =======
 
 .. toctree::
@@ -14,5 +14,4 @@ SQLITE
 .. toctree::
 
 
-   basic/__index
-   advanced/__index
+    indexes

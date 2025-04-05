@@ -1,4 +1,4 @@
-SQLITE 
+DEVOPS
 =======
 
 .. toctree::
@@ -15,4 +15,4 @@ SQLITE
 
 
    basic/__index
-   advanced/__index
+   devops-tasks/__index

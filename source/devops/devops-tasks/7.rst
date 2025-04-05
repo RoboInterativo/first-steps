@@ -1,0 +1,170 @@
+=======================
+Развертывание веб-приложения с Docker Compose и Ansible
+=======================
+
+Задание
+-------
+Автоматизировать развертывание отказоустойчивого веб-приложения с использованием:
+
+- Docker Compose для оркестрации контейнеров
+- Ansible для автоматизации развертывания
+- Nginx в качестве reverse proxy с балансировкой нагрузки
+- MySQL/MariaDB с персистентным хранилищем
+- PHPMyAdmin для управления БД
+
+Структура решения
+-----------------
+
+1. Docker Compose конфигурация
+2. Ansible роль для автоматизации
+3. Настройка Nginx как reverse proxy
+
+Docker Compose Конфигурация
+---------------------------
+
+Пример файла ``docker-compose.yml``:
+
+.. code-block:: yaml
+
+    version: '3.8'
+
+    services:
+      nginx:
+        image: nginx:latest
+        ports:
+          - "80:80"
+        volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+          - web1
+          - web2
+
+      web1:
+        image: your-web-app-image  # Заменить на Flask/WP образ
+        environment:
+          - DB_HOST=db
+        networks:
+          - app-network
+
+      web2:
+        image: your-web-app-image  # Заменить на Flask/WP образ
+        environment:
+          - DB_HOST=db
+        networks:
+          - app-network
+
+      db:
+        image: mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: app_db
+        volumes:
+          - db_data:/var/lib/mysql
+        networks:
+          - app-network
+
+      phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment:
+          PMA_HOST: db
+        ports:
+          - "8080:80"
+        depends_on:
+          - db
+
+    volumes:
+      db_data:
+
+    networks:
+      app-network:
+
+Ansible Роль
+------------
+
+Структура роли (``roles/deploy/tasks/main.yml``):
+
+.. code-block:: yaml
+
+    - name: Install Docker dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Copy docker-compose files
+      copy:
+        src: docker-compose.yml
+        dest: /opt/app/
+        nginx.conf:
+        src: nginx.conf
+        dest: /opt/app/
+
+    - name: Start containers
+      command: docker-compose up -d
+      args:
+        chdir: /opt/app/
+
+    - name: Restore DB from dump
+      community.docker.docker_container_exec:
+        container: db
+        command: sh -c "mysql -u root -psecret app_db < /dump.sql"
+      when: dump_file_exists
+
+Настройка Nginx как Reverse Proxy
+---------------------------------
+
+Пример ``nginx.conf``:
+
+.. code-block:: nginx
+
+    events {}
+    http {
+        upstream backend {
+            server web1:8000;
+            server web2:8000;
+        }
+
+        server {
+            listen 80;
+
+            location / {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+            }
+        }
+    }
+
+Важные замечания
+----------------
+
+1. Для WordPress заменить ``your-web-app-image`` на ``wordpress:php8.1-apache``
+2. Настроить правильные порты для приложения
+3. Добавить health-check для контейнеров
+4. Использовать секреты для чувствительных данных (env-файлы)
+5. Настроить SSL/TLS при необходимости

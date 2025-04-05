@@ -1,0 +1,132 @@
+.. _sqlite-dml-operations:
+
+Шаг 14 - Ввод, удаление и изменение данных в SQLite
+==================================================
+
+Команды модификации данных
+--------------------------
+
+SQLite поддерживает три основные команды для работы с данными:
+
+1. ``INSERT`` - добавление новых записей
+2. ``UPDATE`` - изменение существующих записей
+3. ``DELETE`` - удаление записей
+
+Добавление данных (INSERT)
+--------------------------
+
+**Простая вставка:**
+
+.. code-block:: sql
+
+    INSERT INTO employees
+    VALUES (1703, 'Smith', 'John', 'x1234', 'john.smith@example.com', '1', 1002, 'Sales Rep');
+
+**Вставка с указанием столбцов:**
+
+.. code-block:: sql
+
+    INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, city, country)
+    VALUES (497, 'New Customer', 'Ivanov', 'Petr', '+7 383 1234567', 'Lenina 1', 'Novosibirsk', 'Russia');
+
+**Вставка NULL-значений:**
+
+.. code-block:: sql
+
+    INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, city, country, salesRepEmployeeNumber)
+    VALUES (498, 'Another Customer', 'Petrov', 'Ivan', '+7 383 7654321', 'Kirova 5', 'Novosibirsk', 'Russia', NULL);
+
+**Вставка данных из запроса:**
+
+.. code-block:: sql
+
+    INSERT INTO high_value_customers
+    SELECT customerNumber, customerName, creditLimit
+    FROM customers
+    WHERE creditLimit > 100000;
+
+Удаление данных (DELETE)
+------------------------
+
+**Удаление всех записей (осторожно!):**
+
+.. code-block:: sql
+
+    DELETE FROM payments;
+
+**Удаление с условием:**
+
+.. code-block:: sql
+
+    DELETE FROM customers
+    WHERE customerNumber = 497;
+
+**Удаление с использованием подзапроса:**
+
+.. code-block:: sql
+
+    DELETE FROM orders
+    WHERE customerNumber IN (
+        SELECT customerNumber
+        FROM customers
+        WHERE country = 'Russia'
+    );
+
+Изменение данных (UPDATE)
+-------------------------
+
+**Обновление всех записей:**
+
+.. code-block:: sql
+
+    UPDATE products
+    SET MSRP = MSRP * 1.1;  -- Увеличить цены на 10%
+
+**Обновление с условием:**
+
+.. code-block:: sql
+
+    UPDATE customers
+    SET creditLimit = 50000,
+        salesRepEmployeeNumber = 1703
+    WHERE country = 'Russia';
+
+**Обновление с использованием подзапроса:**
+
+.. code-block:: sql
+
+    UPDATE products
+    SET quantityInStock = quantityInStock + 50
+    WHERE productCode IN (
+        SELECT productCode
+        FROM orderdetails
+        GROUP BY productCode
+        HAVING SUM(quantityOrdered) > 100
+    );
+
+Важные особенности SQLite:
+-------------------------
+
+1. Все операции DML (Data Manipulation Language) в SQLite поддерживают транзакции
+2. Для отмены изменений можно использовать ``ROLLBACK``
+3. Для подтверждения изменений - ``COMMIT``
+4. SQLite автоматически создает транзакцию для каждой команды, если явно не указана своя
+
+Пример транзакции:
+
+.. code-block:: sql
+
+    BEGIN TRANSACTION;
+
+    INSERT INTO orders (orderNumber, orderDate, requiredDate, status, customerNumber)
+    VALUES (10426, '2023-05-15', '2023-05-30', 'In Process', 112);
+
+    INSERT INTO orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber)
+    VALUES (10426, 'S10_1949', 2, 98.58, 1);
+
+    COMMIT;
+
+В следующих шагах мы рассмотрим:
+- Ограничения целостности данных (PRIMARY KEY, FOREIGN KEY)
+- Создание и изменение структуры таблиц
+- Представления (VIEWS) и другие объекты базы данных

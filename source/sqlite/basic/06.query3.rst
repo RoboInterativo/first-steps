@@ -1,0 +1,159 @@
+.. _sql-select-operators:
+
+Шаг 6 - Операторы сравнения, логические и специальные в SELECT
+=============================================================
+
+В данном разделе используется база данных **db_example/custom**.
+
+Операторы сравнения
+~~~~~~~~~~~~~~~~~~~
+
+На предыдущем шаге мы использовали оператор равенства ``=`` в предложении
+``WHERE``. SQL предоставляет набор операторов сравнения для построения сложных условий:
+
+.. list-table:: Операторы сравнения
+   :widths: 20 80
+   :header-rows: 0
+
+   * - ``=``
+     - Равно
+   * - ``>``
+     - Больше чем
+   * - ``<``
+     - Меньше чем
+   * - ``>=``
+     - Больше или равно
+   * - ``<=``
+     - Меньше или равно
+   * - ``<>`` или ``!=``
+     - Не равно
+
+Пример: найти всех заказчиков с **creditLimit** выше 59000:
+
+.. code-block:: sql
+
+    SELECT customerName, creditLimit
+    FROM customers
+    WHERE creditLimit > 59000;
+
+Результат:
+
+.. list-table::
+   :widths: 40 20
+   :header-rows: 1
+
+   * - customerName
+     - creditLimit
+   * - Signal Gift Stores
+     - 71800
+   * - Australian Collectors, Co.
+     - 117300
+   * - La Rochelle Gifts
+     - 118200
+   * - Baane Mini Imports
+     - 81700
+   * - Mini Gifts Distributors Ltd.
+     - 210500
+
+Логические операторы
+~~~~~~~~~~~~~~~~~~~
+
+SQL поддерживает три основных логических оператора:
+
+.. list-table:: Логические операторы
+   :widths: 20 80
+   :header-rows: 0
+
+   * - ``AND``
+     - Логическое "И" (возвращает TRUE, если оба условия истинны)
+   * - ``OR``
+     - Логическое "ИЛИ" (возвращает TRUE, если хотя бы одно условие истинно)
+   * - ``NOT``
+     - Логическое отрицание (инвертирует условие)
+
+Пример с ``AND``: заказчики из Madrid с положительным кредитным лимитом:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE city = 'Madrid' AND creditLimit > 0;
+
+Пример с ``OR``: заказчики из Madrid или Los Angeles:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country
+    FROM customers
+    WHERE city = 'Madrid' OR city = 'Los Angeles';
+
+Пример с ``NOT``: заказчики из Madrid с ненулевым кредитным лимитом:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE city = 'Madrid' AND NOT creditLimit = 0;
+
+Группировка условий
+~~~~~~~~~~~~~~~~~~~
+
+Для группировки условий используются круглые скобки:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE NOT (city = 'Madrid' AND creditLimit = 0);
+
+Специальные операторы
+~~~~~~~~~~~~~~~~~~~~~
+
+IN - соответствие списку значений
+---------------------------------
+
+Оператор ``IN`` проверяет вхождение значения в список:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE city IN ('Madrid', 'Paris');
+
+BETWEEN - диапазон значений
+--------------------------
+
+Оператор ``BETWEEN`` проверяет вхождение в диапазон:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE creditLimit BETWEEN 34800 AND 55400;
+
+LIKE - поиск по шаблону
+-----------------------
+
+Оператор ``LIKE`` ищет строки по шаблону:
+
+- ``%`` - любое количество любых символов
+- ``_`` - ровно один любой символ
+
+Пример: имена, начинающиеся на "O":
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit
+    FROM customers
+    WHERE customerName LIKE 'O%';
+
+IS NULL - проверка на NULL
+-------------------------
+
+Для проверки на NULL используется специальный оператор:
+
+.. code-block:: sql
+
+    SELECT customerName, city, country, creditLimit, postalCode
+    FROM customers
+    WHERE postalCode IS NULL;

@@ -1,0 +1,184 @@
+Справка
+=======================
+
+.. contents:: Оглавление этой страницы
+   :depth: 2
+   :local:
+
+
+Справка по ansible
+----------------------
+
+Модуль копирования(copy)
+~~~~~~~~~~~~~~~~~~~~~~
+Нужен для копирования файл с хоста ansible на целевой хост.
+
+.. code-block:: yaml
+
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: /srv/myfiles/foo.conf
+        dest: /etc/foo.conf
+        owner: foo
+        group: foo
+        mode: '0644'
+
+
+Модуль командной строки(cmd)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Выполняет команду shell на удаленном хосте
+
+.. code-block:: yaml
+
+        - name: Run NATS
+          ansible.builtin.command:
+            cmd: docker compose up -d  --remove-orphans
+            chdir: "/opt/infra/nats/{{ natsdir |string }}"
+
+
+Модуль управления папками и файлами (file)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: yaml
+
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+        path: /etc/foo
+        state: directory
+
+
+    - name: Recursively remove directory
+      ansible.builtin.file:
+        path: /etc/foo
+        state: absent
+
+
+Модуль установки пакетов(apt)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Устанавливает пакет приложения
+
+.. code-block:: yaml
+
+  - name: Install a list of packages
+    apt:
+      pkg:
+      - foo
+      - foo-tools
+
+Модуль сервис(service)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Для управления сервисами операционной системы
+
+.. code-block:: yaml
+
+    ansible.builtin.service:
+      name: httpd
+      state: started
+
+Модуль шаблонов(templates)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Этот модуль является частью базового пакета Ansible (ansible-base) и включен во все установки Ansible. В большинстве случаев вы можете использовать краткое имя модуля template без указания ключевого слова collections:. Тем не менее, мы рекомендуем использовать FQCN (Fully Qualified Collection Name) для удобства ссылок на документацию модуля и во избежание конфликтов с другими коллекциями, которые могут иметь одноименные модули.
+
+**Синопсис**
+
+* Шаблоны обрабатываются с помощью языка шаблонов Jinja2.
+* Документация по форматированию шаблонов доступна в `Template Designer Documentation <https://jinja.palletsprojects.com/en/latest/templates/>`_.
+* Дополнительные переменные, перечисленные ниже, могут использоваться в шаблонах.
+
+.. code-block:: yaml
+
+    - name: Template a file to /etc/file.conf
+      ansible.builtin.template:
+        src: /mytemplates/foo.j2
+        dest: /etc/file.conf
+        owner: bin
+        group: wheel
+        mode: '0644'
+
+
+Модуль git
+~~~~~~~~~~~
+Клонируем git репозитарий, и обновляем
+
+.. code-block:: yaml
+
+  - name: Update repository
+    ansible.builtin.git:
+      repo: 'git@mds-gitlab.npobaum.ru:a.shilo/infra.git'
+      dest: /opt/infra
+      version: main  # или нужная ветка
+      force: yes
+    register: repo_updated
+
+
+
+Сборка docker образа в gitlab (Kanico)
+----------------------------------------
+
+.. code-block:: yaml
+
+
+    build:
+      stage: build
+      when: manual
+      image:
+        name: gcr.io/kaniko-project/executor:v1.14.0-debug
+        entrypoint: [""]
+      before_script:
+        - pwd
+        - ls -li
+        - chmod +x ./create.sh
+        - pwd && ls
+        - ./create.sh
+
+        - cp config.json /kaniko/.docker
+        - ls /kaniko/.docker
+
+      script:
+        - /kaniko/executor --help
+        - /kaniko/executor
+          --context "${CI_PROJECT_DIR}"
+          --skip-tls-verify
+          --skip-tls-verify-pull
+          --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+          --destination "registry.robointerativo.org/sandbox/project_name:$CI_COMMIT_REF_SLUG"
+            #$CI_COMMIT_SHORT_SHA"
+        - echo $CI_COMMIT_SHORT_SHA
+
+Получение персонального токена доступа
+---------------------------------------
+
+В гитлабе нужно получить персональный токен доступа с правами
+
+- read_repository
+- read_registry
+- write_registry
+
+Сохранить имя и токен
+
+
+Настройка доступа к приватному репозитарию docker
+-------------------------------------------------
+Для того что был доступ к приватному репозитарию docker нужно настроить
+docker config по умолчанию лежит в папке ``.docker`` с именем ``.config.json``
+
+**Генерация блока auth**
+
+.. code-block:: bash
+
+    export DOCKER_USER=TOKEN_NAME
+    export REG_TOKEN=TOKEN
+    echo "${DOCKER_USER}:${REG_TOKEN}" | tr -d '\n' | base64 -i -w 0
+
+**Пример конфигурации**
+
+.. code-block:: json
+
+    {"auths":  {
+       "registry.gitlab.com": {  "auth": "RE9DS0VSTE9HSU46RE9DS0VSUEFTUwo="  }
+    }}

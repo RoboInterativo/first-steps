@@ -1,4 +1,4 @@
-SQLITE 
+DEVOPS практические задания
 =======
 
 .. toctree::
@@ -14,5 +14,6 @@ SQLITE
 .. toctree::
 
 
-   basic/__index
-   advanced/__index
+   00.about
+   01.task
+   02.task

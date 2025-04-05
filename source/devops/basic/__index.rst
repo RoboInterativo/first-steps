@@ -1,4 +1,4 @@
-SQLITE 
+DEVOPS c нуля
 =======
 
 .. toctree::
@@ -14,5 +14,5 @@ SQLITE
 .. toctree::
 
 
-   basic/__index
-   advanced/__index
+   00.lesson
+   01.lesson

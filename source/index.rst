@@ -22,6 +22,8 @@
    Home <self>
    db
    sqlite/__index
+   sqlite-advanced/__index
    mssql/__index
-   mysql
+   mysql/__index
    pythondb/__index
+   devops/__index
