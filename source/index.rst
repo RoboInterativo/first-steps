@@ -25,5 +25,6 @@
    sqlite-advanced/__index
    mssql/__index
    mysql/__index
+   dataanalyst/__index
    pythondb/__index
    devops/__index

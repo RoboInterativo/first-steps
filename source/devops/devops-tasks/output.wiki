@@ -1,0 +1,114 @@
+'''Задание для студента:'''<br />
+Разверните сайт на движке MediaWiki (как в Викимедиа) на сервере с Ubuntu 22.04 LTS, используя '''Nginx''' вместо Apache. Сайт должен быть доступен по домену или IP-адресу с корректной работой всех функций вики.
+
+
+-----
+
+=== '''Инструкция по выполнению:''' ===
+
+==== 1. '''Подготовка сервера (Ubuntu 22.04)''' ====
+
+* Обновите пакеты: <code>bash      sudo apt update &amp;&amp; sudo apt upgrade -y</code>
+* Установите базовые утилиты: <code>bash      sudo apt install -y curl wget unzip</code>
+
+
+-----
+
+==== 2. '''Установка LEMP-стека (Nginx + MariaDB + PHP)''' ====
+
+* '''Установите Nginx:''' <code>bash      sudo apt install -y nginx      sudo systemctl start nginx      sudo systemctl enable nginx</code>
+* '''Установите MariaDB:''' <code>bash      sudo apt install -y mariadb-server      sudo systemctl start mariadb      sudo mysql_secure_installation</code>
+** Следуйте подсказкам: задайте пароль root, удалите анонимных пользователей, отключите удаленный доступ root.
+* '''Установите PHP 8.1 и модули:''' <code>bash      sudo apt install -y php-fpm php-mysql php-apcu php-intl php-xml php-mbstring php-curl php-gd php-zip</code>
+* '''Настройте PHP-FPM:'''<br />
+Откройте файл <code>/etc/php/8.1/fpm/php.ini</code> и измените параметры: <code>ini      memory_limit = 256M      upload_max_filesize = 100M      post_max_size = 100M      max_execution_time = 300</code> Перезапустите PHP-FPM: <code>bash      sudo systemctl restart php8.1-fpm</code>
+
+
+-----
+
+==== 3. '''Установка MediaWiki''' ====
+
+* Скачайте последнюю версию MediaWiki: <code>bash      wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.0.tar.gz</code>
+* Распакуйте архив в директорию Nginx: <code>bash      sudo tar -xvzf mediawiki-1.41.0.tar.gz -C /var/www/      sudo mv /var/www/mediawiki-1.41.0 /var/www/wiki</code>
+* Настройте права: <code>bash      sudo chown -R www-data:www-data /var/www/wiki/      sudo chmod -R 755 /var/www/wiki/</code>
+
+
+-----
+
+==== 4. '''Настройка Nginx для MediaWiki''' ====
+
+<ul>
+<li><p>Создайте конфигурационный файл для сайта: <code>bash      sudo nano /etc/nginx/sites-available/wiki.conf</code></p></li>
+<li><p>Вставьте конфигурацию (замените <code>your_domain_or_ip</code> на IP или домен сервера):</p>
+<source lang="nginx">server {
+    listen 80;
+    server_name your_domain_or_ip;
+    root /var/www/wiki;
+
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ @rewrite;
+    }
+
+    location @rewrite {
+        rewrite ^/(.*)$ /index.php?title=$1&$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.1-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}</source></li>
+<li><p>Активируйте конфигурацию: <code>bash      sudo ln -s /etc/nginx/sites-available/wiki.conf /etc/nginx/sites-enabled/      sudo nginx -t  # Проверьте синтаксис      sudo systemctl reload nginx</code></p></li></ul>
+
+
+-----
+
+==== 5. '''Настройка базы данных''' ====
+
+* Войдите в MariaDB: <code>bash      sudo mysql -u root -p</code>
+* Создайте базу данных и пользователя: <code>sql      CREATE DATABASE wikidb;      CREATE USER 'wiki_user'@'localhost' IDENTIFIED BY 'ваш_надежный_пароль';      GRANT ALL PRIVILEGES ON wikidb.* TO 'wiki_user'@'localhost';      FLUSH PRIVILEGES;      EXIT;</code>
+
+
+-----
+
+==== 6. '''Завершение установки через веб-интерфейс''' ====
+
+<ul>
+<li>Откройте в браузере: <code>http://your_domain_or_ip</code>.</li>
+<li>Следуйте инструкциям установки MediaWiki:
+<ul>
+<li><p>Выберите язык.</p></li>
+<li><p>В разделе '''База данных''' укажите:</p>
+<ul>
+<li>Тип БД: MariaDB/MySQL</li>
+<li>Имя БД: <code>wikidb</code></li>
+<li>Имя пользователя: <code>wiki_user</code></li>
+<li>Пароль: ваш пароль от MariaDB.</li></ul>
+</li>
+<li><p>Заполните настройки сайта (название вики, имя администратора и пароль).</p></li>
+<li><p>В конце скачайте файл <code>LocalSettings.php</code> и переместите его в <code>/var/www/wiki</code>:</p>
+<source lang="bash">sudo mv ~/Downloads/LocalSettings.php /var/www/wiki/</source></li></ul>
+</li></ul>
+
+
+-----
+
+==== 7. '''Дополнительно (опционально)''' ====
+
+* '''Настройка HTTPS через Let’s Encrypt:''' Установите Certbot и получите сертификат: <code>bash      sudo apt install -y certbot python3-certbot-nginx      sudo certbot --nginx -d your_domain</code>
+* '''Кеширование:'''<br />
+Для повышения производительности настройте Redis или Memcached.
+
+
+-----
+
+'''Проверка:'''<br />
+Откройте сайт в браузере. Убедитесь, что: - Страницы редактируются. - Файлы загружаются. - Поиск работает.

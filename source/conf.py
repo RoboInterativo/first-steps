@@ -20,8 +20,14 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     'sphinx.ext.autodoc',
-    'rst2pdf.pdfbuilder'
+    'rst2pdf.pdfbuilder',
+    "myst_parser",  # Поддержка Markdown
 ]
+# Разрешить .md и .rst (опционально)
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 templates_path = ['_templates']
 

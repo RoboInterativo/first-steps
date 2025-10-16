@@ -15,4 +15,6 @@ DEVOPS
 
 
    basic/__index
+   bash/__index
+   review/__index
    devops-tasks/__index

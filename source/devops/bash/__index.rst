@@ -1,4 +1,4 @@
-Анализ данных
+BASH
 =======
 
 .. toctree::
@@ -14,5 +14,5 @@
 .. toctree::
 
 
-   01.install
-   lara1.md
+
+   01.Lesson.md
