@@ -28,7 +28,7 @@ def orderdetails():
 
 
     cur=con.cursor()
-
+#
 
     sql=f"""
     select orders.orderNumber,orders.orderDate,
