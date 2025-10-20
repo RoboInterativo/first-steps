@@ -28,3 +28,4 @@
    dataanalyst/__index
    pythondb/__index
    devops/__index
+   python/__index

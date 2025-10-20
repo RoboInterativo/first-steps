@@ -1,0 +1,16 @@
+services:
+
+  web:
+    # container_name: web
+    # build: ./front
+    image: nginx
+    ports:
+      - 80:80
+    # network_mode: host
+
+    volumes:
+      - ./build/html:/var/www/html
+        #/usr/share/nginx/html
+      # - ./mock/static:/var/www/static
+      - ./nginx/conf/site.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
