@@ -17,3 +17,4 @@ Python для начинающих
 
     00.install.md
     01.lesson1.md
+    math.md
