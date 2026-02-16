@@ -21,8 +21,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     'sphinx.ext.autodoc',
     'rst2pdf.pdfbuilder',
-    'sphinx.ext.mathjax'
-    "myst_parser",  # Поддержка Markdown
+    'sphinx.ext.mathjax',
+    "myst_parser",
 ]
 # Разрешить .md и .rst (опционально)
 source_suffix = {
