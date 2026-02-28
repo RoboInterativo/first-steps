@@ -15,6 +15,7 @@ DEVOPS
 
 
    basic/__index
+   linux/__index
    individ/__index
    bash/__index
    review/__index

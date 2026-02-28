@@ -29,3 +29,4 @@
    pythondb/__index
    devops/__index
    python/__index
+   documentation/__index

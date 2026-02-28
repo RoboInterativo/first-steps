@@ -5,6 +5,10 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+# from pygments.lexers import BashSessionLexer
+#
+# def setup(app):
+#     app.add_lexer("shell-session", BashSessionLexer)
 
 project = 'Первые Шаги'
 copyright = '2024, Алексей Шило. Сергей Шило.'
@@ -24,6 +28,8 @@ extensions = [
     'sphinx.ext.mathjax',
     "myst_parser",
 ]
+myst_enable_extensions = ["dollarmath", "amsmath"]
+
 # Разрешить .md и .rst (опционально)
 source_suffix = {
     '.rst': 'restructuredtext',
