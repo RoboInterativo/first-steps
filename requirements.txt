@@ -15,7 +15,7 @@ mdit-py-plugins==0.4.2
 mdurl==0.1.2
 myst-parser==4.0.0
 packaging==24.2
-pillow==11.0.0
+pillow
 Pygments==2.18.0
 PyYAML==6.0.2
 reportlab==4.2.5
