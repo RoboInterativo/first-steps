@@ -1,4 +1,4 @@
-Linux
+DEVOPS c нуля
 =======
 
 .. toctree::
@@ -14,5 +14,5 @@ Linux
 .. toctree::
 
 
-
-   01.Lesson.md
+   00.lesson
+   01.lesson.md
