@@ -27,8 +27,14 @@ extensions = [
     'rst2pdf.pdfbuilder',
     'sphinx.ext.mathjax',
     "myst_parser",
+    "sphinxcontrib.mermaid",
 ]
-myst_enable_extensions = ["dollarmath", "amsmath"]
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+    "colon_fence",
+]
+# позволяет использовать ::: для блоков
 
 # Разрешить .md и .rst (опционально)
 source_suffix = {
