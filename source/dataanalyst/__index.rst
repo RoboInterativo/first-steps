@@ -17,3 +17,6 @@
    01.install
    lara1.md
    masha1.md
+   02.md
+   03.md
+   datalense.md
