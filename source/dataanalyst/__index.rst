@@ -14,7 +14,7 @@
 .. toctree::
 
 
-   01.install
+   01.install.md
    lara1.md
    masha1.md
    02.md
