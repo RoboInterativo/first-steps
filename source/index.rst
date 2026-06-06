@@ -29,4 +29,5 @@
    pythondb/__index
    devops/__index
    python/__index
+   net/__index
    documentation/__index
