@@ -14,3 +14,5 @@
 .. toctree::
 
    task001.md
+   task002.md
+   
