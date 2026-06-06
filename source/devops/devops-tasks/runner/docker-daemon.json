@@ -1,0 +1,3 @@
+{
+  "insecure-registries": ["mds-gitlab.npobaum.ru:5050", "localhost:5050"]
+}

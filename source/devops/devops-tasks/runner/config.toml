@@ -1,0 +1,22 @@
+concurrent = 4
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "docker-runner"
+  url = "http://mds-gitlab.baum.ru/"
+  token = "glrt-dzPsnAzWVV64M1js4cQb"
+  executor = "docker"
+  [runners.docker]
+    tls_verify = false
+    image = "ubuntu:24.04"
+    privileged = true
+    volumes = ["/cache",
+               "/var/run/docker.sock:/var/run/docker.sock",
+               "/root/.ssh:/root/.ssh",
+               "/opt/prepare-environment.sh:/prepare-environment.sh:ro"]
+  [runners.custom]
+    prepare_exec = "/prepare-environment.sh"
+    #gitlab-runner register  --url http://mds-gitlab.npobaum.ru  --token glrt-qSra9SqmSZYt7ADkkXkR
