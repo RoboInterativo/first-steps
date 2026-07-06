@@ -15,6 +15,8 @@
 
 
    01.install.md
+   theory.md
+   quest.md
    math.md
    lara1.md
    masha1.md
