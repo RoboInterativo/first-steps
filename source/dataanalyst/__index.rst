@@ -15,6 +15,7 @@
 
 
    01.install.md
+   math.md
    lara1.md
    masha1.md
    02.md
