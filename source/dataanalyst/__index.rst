@@ -16,6 +16,7 @@
 
    01.install.md
    theory.md
+   join.md
    quest.md
    math.md
    lara1.md
