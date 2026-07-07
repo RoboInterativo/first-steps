@@ -17,12 +17,11 @@
    01.install.md
    theory.md
    join.md
-   quest.md
    math.md
    bussiness.md
-   lara1.md
-   masha1.md
    02.md
-   03.md
-   04.md
    datalense.md
+   quest.md
+   quest2.md
+   quest3.md
+   pythonsql.md
